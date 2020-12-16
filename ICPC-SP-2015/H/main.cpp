@@ -96,7 +96,7 @@ vector<int64_t> bellman(vector<unordered_map<int, int64_t>> graph, int height, i
 }
 
 typedef pair<int64_t, int64_t> pqNode;
-vector<int> dijkstra(int s, vector<unordered_map<int, int64_t>> graph)
+vector<int64_t> dijkstra(int s, vector<unordered_map<int, int64_t>> graph)
 {
     priority_queue<pqNode, vector<pqNode>, greater<pqNode>> pq;
 
@@ -127,37 +127,21 @@ vector<int> dijkstra(int s, vector<unordered_map<int, int64_t>> graph)
             }
         }
     }
-    return parents;
+    return distances;
 }
 
-vector<int64_t> get_real_distances(vector<int> parents, vector<unordered_map<int, int64_t>> graph, int source)
+vector<int64_t> get_real_distances(vector<int64_t> dij_dist, vector<int64_t> bell_dist, int source)
 {
-    vector<int64_t> final_distances(graph.size(), 0);
-    for (int destination = 0; destination < graph.size(); destination++)
-    {
-        if (destination == source)
-        {
+    vector<int64_t> final_distances(dij_dist.size(), -1);
+
+    for(int v = 0; v < dij_dist.size(); v++) {
+        if (v == source) {
             final_distances[source] = 0;
-            // continue;
+            continue;
         }
-        else
-        {
-            // find reverse path from v to
-            int u = parents[destination];
-            int v = destination;
-            final_distances[destination] += graph[u].at(v);
-            while (u != source)
-            {
-                v = u;
-                u = parents[u];
-                final_distances[destination] += graph[u].at(v);
-                // cout << "Final dists, " << "considering: " << u << "to " << v << endl;
-                // for(int i = 0; i < final_distances.size(); i++) {
-                //     cout << i << ": " << final_distances[i] << endl;
-                // }
-            }
-        }
+        final_distances[v] = dij_dist[v] + bell_dist[v] - bell_dist[source];
     }
+    
     return final_distances;
     // cout << "parents: " << endl;
     // for (int i = 0; i < parents.size(); i++)
@@ -172,11 +156,12 @@ vector<int64_t> get_real_distances(vector<int> parents, vector<unordered_map<int
     // }
 }
 
-int64_t get_avg_min_cost(vector<unordered_map<int, int64_t>> graph, vector<unordered_map<int, int64_t>> g_prime)
+int64_t get_avg_min_cost(vector<unordered_map<int, int64_t>> graph, vector<unordered_map<int, int64_t>> g_prime,
+                        vector<int64_t> bell_dist)
 {   long double sum_avg = 0.0;
     for(int i = 0; i < graph.size(); i++) {
-        vector<int> parents = dijkstra(i, g_prime);
-        vector<int64_t> final_distances = get_real_distances(parents, graph, i);
+        vector<int64_t> dij_dist = dijkstra(i, g_prime);
+        vector<int64_t> final_distances = get_real_distances(dij_dist, bell_dist, i);
         int64_t sum = 0; for (int64_t x: final_distances) { sum += x; }
         // cout << i << ", sum: " << sum << endl;
         long double this_avg = sum / (long double)(graph.size() -1); // because we want distincts
@@ -236,7 +221,7 @@ int main(int argc, char **argv)
     // cout << "G': " << endl;
     // print_graph(g_prime);
 
-    int64_t result = get_avg_min_cost(graph, g_prime);
+    int64_t result = get_avg_min_cost(graph, g_prime, distances);
     cout << result << endl;
     // vector<int> parents = dijkstra(0, g_prime);
     // get_real_distances(parents, graph, 0);
