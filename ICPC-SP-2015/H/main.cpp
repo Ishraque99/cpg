@@ -2,6 +2,7 @@
 // #include "helpers.h"
 
 using namespace std;
+
 vector<string> string_split(const string &s, char delim)
 {
     vector<string> result;
@@ -24,7 +25,6 @@ bool is_valid(int r, int c, int height, int width)
 // returns -1 if invalid coordinates
 int next_index(int delta, int r, int c, int height, int width)
 {
-    // this logic could be wrong
     int next_r = delta == 0 ? r - 1 : r;
     next_r = delta == 2 ? r + 1 : next_r;
     int next_c = delta == 1 ? c - 1 : c;
@@ -37,6 +37,8 @@ int next_index(int delta, int r, int c, int height, int width)
     return (next_r * width) + next_c;
 }
 
+// bellman subroutine. Returns the distances from S to all nodes.
+// This distance acts as a modifier
 vector<int64_t> bellman(vector<unordered_map<int, int64_t>> graph, int height, int width)
 {
     // init g_prime and copy weights
@@ -85,7 +87,6 @@ vector<int64_t> bellman(vector<unordered_map<int, int64_t>> graph, int height, i
                     if (dist[node_idx] + weight < dist[next_idx])
                     {
                         dist[next_idx] = dist[node_idx] + weight;
-
                         parents[next_idx] = node_idx;
                     }
                 }
@@ -95,6 +96,7 @@ vector<int64_t> bellman(vector<unordered_map<int, int64_t>> graph, int height, i
     return dist;
 }
 
+// dijkstra subroutine. Returns the min cost of path from s to all nodes.
 typedef pair<int64_t, int64_t> pqNode;
 vector<int64_t> dijkstra(int s, vector<unordered_map<int, int64_t>> graph)
 {
@@ -130,6 +132,7 @@ vector<int64_t> dijkstra(int s, vector<unordered_map<int, int64_t>> graph)
     return distances;
 }
 
+// modify back the path distances from dijkstra so they match our original graph
 vector<int64_t> get_real_distances(vector<int64_t> dij_dist, vector<int64_t> bell_dist, int source)
 {
     vector<int64_t> final_distances(dij_dist.size(), -1);
@@ -143,17 +146,6 @@ vector<int64_t> get_real_distances(vector<int64_t> dij_dist, vector<int64_t> bel
     }
     
     return final_distances;
-    // cout << "parents: " << endl;
-    // for (int i = 0; i < parents.size(); i++)
-    // {
-    //     cout << i << ": " << parents[i] << endl;
-    // }
-
-    // cout << "Final dists: " << endl;
-    // for (int i = 0; i < final_distances.size(); i++)
-    // {
-    //     cout << i << ": " << final_distances[i] << endl;
-    // }
 }
 
 int64_t get_avg_min_cost(vector<unordered_map<int, int64_t>> graph, vector<unordered_map<int, int64_t>> g_prime,
@@ -163,13 +155,11 @@ int64_t get_avg_min_cost(vector<unordered_map<int, int64_t>> graph, vector<unord
         vector<int64_t> dij_dist = dijkstra(i, g_prime);
         vector<int64_t> final_distances = get_real_distances(dij_dist, bell_dist, i);
         int64_t sum = 0; for (int64_t x: final_distances) { sum += x; }
-        // cout << i << ", sum: " << sum << endl;
         long double this_avg = sum / (long double)(graph.size() -1); // because we want distincts
         sum_avg += this_avg;
     }
     
     int64_t ceil_result = (int64_t)ceill(sum_avg / graph.size());
-    // cout << "ceil res: " << sum_avg / graph.size() << endl;
     return ceil_result;
 }
 
@@ -180,12 +170,10 @@ int main(int argc, char **argv)
     int width, height;
     sscanf(dim.c_str(), "%d %d", &width, &height);
 
-    // // get all input data
     vector<unordered_map<int, int64_t>> graph(height * width);
 
     for (int delta = 0; delta < 4; delta++)
-    {
-        // 0: north, 1: west, 2: south, 3: east
+    {   // 0: north, 1: west, 2: south, 3: east
         for (int r = 0; r < height; r++)
         {
             string w_str;
@@ -215,14 +203,7 @@ int main(int argc, char **argv)
         }
     }
 
-    // cout << "G: " << endl;
-    // print_graph(graph);
-
-    // cout << "G': " << endl;
-    // print_graph(g_prime);
-
     int64_t result = get_avg_min_cost(graph, g_prime, distances);
     cout << result << endl;
-    // vector<int> parents = dijkstra(0, g_prime);
-    // get_real_distances(parents, graph, 0);
+    return 0;
 }
