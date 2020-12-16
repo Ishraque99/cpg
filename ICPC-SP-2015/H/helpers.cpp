@@ -42,3 +42,13 @@ void print_2d(vector<vector<int64_t>> arr2d) {
         cout << "]" << endl;
     }
 }
+
+void print_graph(vector<unordered_map<int, int64_t>> graph) {
+    for (int i = 0; i < graph.size(); i ++) {
+        cout << i << ": ";
+        for(const auto &p: graph[i]) {
+            cout << "(" << p.first << ", " << p.second << "), ";
+        }
+        cout << endl;
+    }
+}
