@@ -33,3 +33,6 @@
 
 # solution files
 */**/solution
+
+# ide stuff
+.vscode
