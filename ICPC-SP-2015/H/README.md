@@ -1,5 +1,7 @@
 # H. Hiking
 
+<https://prog4fun.csse.canterbury.ac.nz/mod/quiz/attempt.php?attempt=1149&page=2&cmid=42>
+
 Alice likes to hike. She likes some bits of track and dislikes others. A cost function will model her distaste
 for (or liking of) all available track sections. Given a map with the costs of going from one location to
 the next, find the average cost for a hike in that area.
@@ -27,3 +29,25 @@ between any two cells.
 
 Display the smallest integer that is greater than or equal to the average cost of minimal-cost hikes among
 all pairs of distinct start and end cells.
+
+## sample input/output
+
+input:
+
+```sh
+2 2
+0 0
+-200 0
+0 100
+0 500
+400 300
+0 0
+200 0
+-400 0
+```
+
+output:
+
+```sh
+50
+```
