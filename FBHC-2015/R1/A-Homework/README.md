@@ -19,8 +19,8 @@ For the ith question, print a line containing "Case #i: " followed by the numbe
 
 ## Constraints
 1 ≤ T ≤ 100
-2 ≤ A ≤ B ≤ 107
-1 ≤ K ≤ 109
+2 ≤ A ≤ B ≤ 10^7
+1 ≤ K ≤ 10^9
 
 ### Explanation of Sample
 

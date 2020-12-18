@@ -2,9 +2,12 @@
 
 using namespace std;
 
-vector<int> generate_primes(int x) {
+vector<int> generate_primacities(int x) {
     // generate prime nums from 0 to x
+    // and use them to count how many times 
+    // a number is divided by that prime
     vector<bool> sieve(x+1, true);
+    vector<int> primacity(x+1, 0);
     sieve[0] = false; sieve[1] = false;
 
     for(int i = 2; i < sqrt(x) + 1; i++) {
@@ -21,37 +24,32 @@ vector<int> generate_primes(int x) {
             primes.push_back(i);
         }
     }
-
-    return primes;
+    for (int p : primes) {
+        for(int j = p; j < x+1; j+= p) {
+            primacity[j] += 1;
+        }
+    }
+    return primacity;
 }
-
-// int primacity_matches(int a, int b, int k, vector<int> primes) {
-//     int count = 0;
-//     for (int i = a; a < b+1; i++) {
-//         primacity = 0;
-//         double limit = sqrt(i) + 1;
-//         for(int j = 0; j < primes.size(); j++) {
-//             if (primes[j] > limit) {
-//                 break;
-//             } else {
-//                 if ()
-//             }
-//         }
-//     }
-//     return count;
-// }
 
 int main(int argc, char** argv) {
     string t_str; getline(cin, t_str); int t = stoi(t_str);
 
-    // generate primes up to limit
-    vector<int> primes = generate_primes(108);
+    // generate primacities up to limit 10^7
+    vector<int> primacities = generate_primacities(10000000);
     
     for (int i = 0; i < t; i++) {
         int c = i+1;
         string input; getline(cin, input); int a,b,k;
         int _ = sscanf(input.c_str(), "%d %d %d", &a, &b, &k);
 
-        int result = primacity_matches(a, b, k, primes);
+        int count = 0;
+        for(int i = a; i < b+1; i++) {
+            if (primacities[i] == k ) {
+                count++;
+            }
+        }
+
+        cout << "Case #" << c << ": " << count << endl;
     }
 }
